@@ -45,29 +45,29 @@ const compareArrays = (a, b) => {
   return a.toString() === b.toString();
 };
 
-const game = {
-  gameBoard: [
-    ["", "", ""],
-    ["", "", ""],
-    ["", "", ""],
-  ],
-  players: { 1: ["player1", []], 2: ["player2", []] },
-  putMarks: function (player, square) {
+function initGame() {
+  let gameBoard;
+
+  setBoard();
+
+  const players = { 1: ["player1", []], 2: ["player2", []] };
+
+  function putMarks(player, square) {
     const [row, column] = square;
 
-    if (game.gameBoard[row][column] === "") {
-      this.writePlayerMoves(player, square);
+    if (gameBoard[row][column] === "") {
+      writePlayerMoves(player, square);
       if (player === 1) {
-        game.gameBoard[row][column] = "X";
+        gameBoard[row][column] = "X";
       } else {
-        game.gameBoard[row][column] = "O";
+        gameBoard[row][column] = "O";
       }
     }
-  },
-  choiceSquare: function (row, column) {
+  }
+  function choiceSquare(row, column) {
     return [row - 1, column - 1];
-  },
-  checkWin: function (player) {
+  }
+  function checkWin(player) {
     const playerMoves = player[1];
     const playerName = player[0];
 
@@ -82,27 +82,36 @@ const game = {
           }
           if (count === 3) {
             console.log(`${playerName} win!`);
-            this.clearGame();
+            clearGame();
           }
         });
       });
     }
-  },
-  clearGame: function () {
-    this.gameBoard = [
+  }
+
+  function setBoard() {
+    gameBoard = [
       ["", "", ""],
       ["", "", ""],
       ["", "", ""],
     ];
-    this.players[1] = ["player1", []];
-    this.players[2] = ["player2", []];
-  },
-  writePlayerMoves: function (player, square) {
-    this.players[player][1].push(square);
+  }
 
-    this.checkWin(game.players[player]);
-  },
-};
+  function clearGame() {
+    setBoard();
+    players[1] = ["player1", []];
+    players[2] = ["player2", []];
+  }
+  function writePlayerMoves(player, square) {
+    players[player][1].push(square);
+
+    checkWin(players[player]);
+  }
+
+  return { putMarks, choiceSquare };
+}
+
+const game = initGame();
 
 game.putMarks(1, game.choiceSquare(1, 1));
 game.putMarks(2, game.choiceSquare(1, 2));
