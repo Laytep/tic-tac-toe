@@ -1,3 +1,5 @@
+const container = document.querySelector(".container");
+
 const winningCombination = {
   1: [
     [0, 0],
@@ -41,14 +43,12 @@ const winningCombination = {
   ],
 };
 
-const compareArrays = (a, b) => {
-  return a.toString() === b.toString();
-};
-
 function initGame() {
   let gameBoard;
+  let currentPlayer = 1;
 
   setBoard();
+  clickHandlerBoard(gameBoard);
 
   const players = { 1: ["player1", []], 2: ["player2", []] };
 
@@ -62,11 +62,42 @@ function initGame() {
       } else {
         gameBoard[row][column] = "O";
       }
+      let isWin = checkWin(players[player]);
+
+      if (isWin) {
+        clearGame();
+      }
+
+      renderDomBoard(gameBoard);
     }
   }
+
+  function clickHandlerBoard(gameBoard) {
+    gameBoard.forEach((row, rowIndex) => {
+      row.forEach((column, columnIndex) => {
+        const currentCell = selectById(`#cell_${rowIndex + "_" + columnIndex}`);
+        currentCell.addEventListener("click", (event) => {
+          const value = event.target.textContent;
+          const clickOn = event.target.id;
+
+          if (value === "") {
+            if (currentPlayer === 1) {
+              putMarks(1, [rowIndex, columnIndex]);
+              currentPlayer = 2;
+            } else {
+              putMarks(2, [rowIndex, columnIndex]);
+              currentPlayer = 1;
+            }
+          }
+        });
+      });
+    });
+  }
+
   function choiceSquare(row, column) {
     return [row - 1, column - 1];
   }
+
   function checkWin(player) {
     const playerMoves = player[1];
     const playerName = player[0];
@@ -82,11 +113,16 @@ function initGame() {
           }
           if (count === 3) {
             console.log(`${playerName} win!`);
-            clearGame();
+            return true;
           }
         });
       });
+
+      if (count === 3) {
+        return true;
+      }
     }
+    return false;
   }
 
   function setBoard() {
@@ -98,14 +134,15 @@ function initGame() {
   }
 
   function clearGame() {
+    currentPlayer = 1;
+
     setBoard();
     players[1] = ["player1", []];
     players[2] = ["player2", []];
   }
+
   function writePlayerMoves(player, square) {
     players[player][1].push(square);
-
-    checkWin(players[player]);
   }
 
   return { putMarks, choiceSquare };
@@ -113,8 +150,25 @@ function initGame() {
 
 const game = initGame();
 
-game.putMarks(1, game.choiceSquare(1, 1));
-game.putMarks(2, game.choiceSquare(1, 2));
-game.putMarks(1, game.choiceSquare(2, 1));
-game.putMarks(2, game.choiceSquare(1, 3));
-game.putMarks(1, game.choiceSquare(3, 1));
+// game.putMarks(1, game.choiceSquare(1, 1));
+// game.putMarks(2, game.choiceSquare(1, 2));
+// game.putMarks(1, game.choiceSquare(2, 1));
+// game.putMarks(2, game.choiceSquare(1, 3));
+// game.putMarks(1, game.choiceSquare(2, 2));
+
+function renderDomBoard(gameBoard) {
+  gameBoard.forEach((row, rowIndex) => {
+    row.forEach((column, columnIndex) => {
+      const currentCell = selectById(`#cell_${rowIndex + "_" + columnIndex}`);
+      currentCell.textContent = column;
+    });
+  });
+}
+
+function selectById(selector) {
+  return document.querySelector(selector);
+}
+
+function compareArrays(a, b) {
+  return a.toString() === b.toString();
+}
