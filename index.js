@@ -56,7 +56,7 @@ const game = {
     const [row, column] = square;
 
     if (game.gameBoard[row][column] === "") {
-      writePlayerMoves(player, square);
+      this.writePlayerMoves(player, square);
       if (player === 1) {
         game.gameBoard[row][column] = "X";
       } else {
@@ -67,7 +67,28 @@ const game = {
   choiceSquare: function (row, column) {
     return [row - 1, column - 1];
   },
-  resetGame: function () {
+  checkWin: function (player) {
+    const playerMoves = player[1];
+    const playerName = player[0];
+
+    for (const combination in winningCombination) {
+      const arrayWinningCombination = winningCombination[combination];
+
+      let count = 0;
+      arrayWinningCombination.map((move) => {
+        playerMoves.map((playerMove) => {
+          if (compareArrays(playerMove, move)) {
+            count++;
+          }
+          if (count === 3) {
+            console.log(`${playerName} win!`);
+            this.clearGame();
+          }
+        });
+      });
+    }
+  },
+  clearGame: function () {
     this.gameBoard = [
       ["", "", ""],
       ["", "", ""],
@@ -76,39 +97,15 @@ const game = {
     this.players[1] = ["player1", []];
     this.players[2] = ["player2", []];
   },
+  writePlayerMoves: function (player, square) {
+    this.players[player][1].push(square);
+
+    this.checkWin(game.players[player]);
+  },
 };
-
-function writePlayerMoves(player, square) {
-  game.players[player][1].push(square);
-
-  checkWin(game.players[player]);
-}
 
 game.putMarks(1, game.choiceSquare(1, 1));
 game.putMarks(2, game.choiceSquare(1, 2));
 game.putMarks(1, game.choiceSquare(2, 1));
 game.putMarks(2, game.choiceSquare(1, 3));
 game.putMarks(1, game.choiceSquare(3, 1));
-
-function checkWin(player) {
-  const playerMoves = player[1];
-  const playerName = player[0];
-
-  for (const combination in winningCombination) {
-    const arrayWinningCombination = winningCombination[combination];
-
-    let count = 0;
-    arrayWinningCombination.map((move) => {
-      playerMoves.map((playerMove) => {
-        if (compareArrays(playerMove, move)) {
-          count++;
-        }
-        if (count === 3) {
-          console.log(`${playerName} win!`);
-          game.resetGame();
-          console.log(game.gameBoard, game.players);
-        }
-      });
-    });
-  }
-}
