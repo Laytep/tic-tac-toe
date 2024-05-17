@@ -51,7 +51,7 @@ const game = {
     ["", "", ""],
     ["", "", ""],
   ],
-  players: { 1: ["Alfred", []], 2: ["Denny", []] },
+  players: { 1: ["player1", []], 2: ["player2", []] },
   putMarks: function (player, square) {
     const [row, column] = square;
 
@@ -67,6 +67,15 @@ const game = {
   choiceSquare: function (row, column) {
     return [row - 1, column - 1];
   },
+  resetGame: function () {
+    this.gameBoard = [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+    ];
+    this.players[1] = ["player1", []];
+    this.players[2] = ["player2", []];
+  },
 };
 
 function writePlayerMoves(player, square) {
@@ -80,8 +89,6 @@ game.putMarks(2, game.choiceSquare(1, 2));
 game.putMarks(1, game.choiceSquare(2, 1));
 game.putMarks(2, game.choiceSquare(1, 3));
 game.putMarks(1, game.choiceSquare(3, 1));
-game.putMarks(2, game.choiceSquare(2, 2));
-game.putMarks(2, game.choiceSquare(3, 2));
 
 function checkWin(player) {
   const playerMoves = player[1];
@@ -98,10 +105,10 @@ function checkWin(player) {
         }
         if (count === 3) {
           console.log(`${playerName} win!`);
+          game.resetGame();
+          console.log(game.gameBoard, game.players);
         }
       });
     });
   }
 }
-
-console.log(game.gameBoard, game.players[1]);
