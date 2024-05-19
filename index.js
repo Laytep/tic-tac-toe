@@ -1,4 +1,7 @@
 const container = document.querySelector(".container");
+const player1Score = document.querySelector("#player1-score");
+const player2Score = document.querySelector("#player2-score");
+const restartGameButton = document.querySelector("#restart");
 
 const winningCombination = {
   1: [
@@ -51,6 +54,7 @@ function initGame() {
   clickHandlerBoard(gameBoard);
 
   const players = { 1: ["player1", []], 2: ["player2", []] };
+  const playerScore = { 1: 0, 2: 0 };
 
   function putMarks(player, square) {
     const [row, column] = square;
@@ -67,7 +71,7 @@ function initGame() {
 
       if (isWin || isTie) {
         if (isWin) {
-          console.log(player, isWin);
+          playerScore[player]++;
         } else if (isTie) {
           console.log("It's a tie");
         }
@@ -76,6 +80,7 @@ function initGame() {
       }
 
       renderDomBoard(gameBoard);
+      updatePlayerScore(playerScore);
     }
   }
 
@@ -119,7 +124,6 @@ function initGame() {
             count++;
           }
           if (count === 3) {
-            console.log(`${playerName} win!`);
             return true;
           }
         });
@@ -133,12 +137,14 @@ function initGame() {
   }
 
   function checkTie() {
+    let emptyCell = false;
+
     gameBoard.forEach((row) => {
       row.forEach((column) => {
-        if (column === "") return false;
+        if (column === "") emptyCell = true;
       });
     });
-    return true;
+    return !emptyCell;
   }
 
   function setBoard() {
@@ -157,11 +163,17 @@ function initGame() {
     players[2] = ["player2", []];
   }
 
+  function clearScore() {
+    playerScore[1] = 0;
+    playerScore[2] = 0;
+    updatePlayerScore(playerScore);
+  }
+
   function writePlayerMoves(player, square) {
     players[player][1].push(square);
   }
 
-  return { putMarks, choiceSquare };
+  return { clearGame, clearScore };
 }
 
 const game = initGame();
@@ -174,6 +186,15 @@ function renderDomBoard(gameBoard) {
     });
   });
 }
+
+function updatePlayerScore(playerScore) {
+  player1Score.textContent = playerScore[1];
+  player2Score.textContent = playerScore[2];
+}
+
+restartGameButton.addEventListener("click", (event) => {
+  game.clearGame(), game.clearScore();
+});
 
 function selectById(selector) {
   return document.querySelector(selector);
