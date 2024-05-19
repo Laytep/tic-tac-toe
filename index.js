@@ -46,7 +46,7 @@ const winningCombination = {
   ],
 };
 
-function initGame() {
+function GameController() {
   let gameBoard;
   let currentPlayer = 1;
 
@@ -79,8 +79,8 @@ function initGame() {
         clearGame();
       }
 
-      renderDomBoard(gameBoard);
-      updatePlayerScore(playerScore);
+      screenControl.renderDomBoard(gameBoard);
+      screenControl.updatePlayerScore(playerScore);
     }
   }
 
@@ -90,7 +90,6 @@ function initGame() {
         const currentCell = selectById(`#cell_${rowIndex + "_" + columnIndex}`);
         currentCell.addEventListener("click", (event) => {
           const value = event.target.textContent;
-          const clickOn = event.target.id;
 
           if (value === "") {
             if (currentPlayer === 1) {
@@ -104,10 +103,6 @@ function initGame() {
         });
       });
     });
-  }
-
-  function choiceSquare(row, column) {
-    return [row - 1, column - 1];
   }
 
   function checkWin(player) {
@@ -166,7 +161,7 @@ function initGame() {
   function clearScore() {
     playerScore[1] = 0;
     playerScore[2] = 0;
-    updatePlayerScore(playerScore);
+    screenControl.updatePlayerScore(playerScore);
   }
 
   function writePlayerMoves(player, square) {
@@ -176,25 +171,7 @@ function initGame() {
   return { clearGame, clearScore };
 }
 
-const game = initGame();
-
-function renderDomBoard(gameBoard) {
-  gameBoard.forEach((row, rowIndex) => {
-    row.forEach((column, columnIndex) => {
-      const currentCell = selectById(`#cell_${rowIndex + "_" + columnIndex}`);
-      currentCell.textContent = column;
-    });
-  });
-}
-
-function updatePlayerScore(playerScore) {
-  player1Score.textContent = playerScore[1];
-  player2Score.textContent = playerScore[2];
-}
-
-restartGameButton.addEventListener("click", (event) => {
-  game.clearGame(), game.clearScore();
-});
+const game = GameController();
 
 function selectById(selector) {
   return document.querySelector(selector);
@@ -203,3 +180,26 @@ function selectById(selector) {
 function compareArrays(a, b) {
   return a.toString() === b.toString();
 }
+
+function ScreenController() {
+  restartGameButton.addEventListener("click", (event) => {
+    game.clearGame(), game.clearScore();
+  });
+
+  function renderDomBoard(gameBoard) {
+    gameBoard.forEach((row, rowIndex) => {
+      row.forEach((column, columnIndex) => {
+        const currentCell = selectById(`#cell_${rowIndex + "_" + columnIndex}`);
+        currentCell.textContent = column;
+      });
+    });
+  }
+
+  function updatePlayerScore(playerScore) {
+    player1Score.textContent = playerScore[1];
+    player2Score.textContent = playerScore[2];
+  }
+
+  return { renderDomBoard, updatePlayerScore };
+}
+const screenControl = ScreenController();
