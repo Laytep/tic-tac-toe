@@ -49,6 +49,7 @@ const winningCombination = {
 function GameController() {
   let gameBoard;
   let currentPlayer = 1;
+  let changeFirstPlayer = false;
 
   setBoard();
   clickHandlerBoard(gameBoard);
@@ -61,10 +62,11 @@ function GameController() {
 
     if (gameBoard[row][column] === "") {
       writePlayerMoves(player, square);
+      console.log("player: ", player, "changeFirstPlayer: ", changeFirstPlayer);
       if (player === 1) {
-        gameBoard[row][column] = "X";
+        gameBoard[row][column] = changeFirstPlayer ? "O" : "X";
       } else {
-        gameBoard[row][column] = "O";
+        gameBoard[row][column] = changeFirstPlayer ? "X" : "O";
       }
       let isWin = checkWin(players[player]);
       let isTie = checkTie();
@@ -72,7 +74,19 @@ function GameController() {
       if (isWin || isTie) {
         if (isWin) {
           playerScore[player]++;
+
+          if (player === 1) {
+            changeFirstPlayer = true;
+          } else {
+            changeFirstPlayer = false;
+          }
         } else if (isTie) {
+          if (player === 1) {
+            changeFirstPlayer = true;
+          } else {
+            changeFirstPlayer = false;
+          }
+
           console.log("It's a tie");
         }
 
@@ -162,6 +176,8 @@ function GameController() {
     playerScore[1] = 0;
     playerScore[2] = 0;
     screenControl.updatePlayerScore(playerScore);
+    screenControl.renderDomBoard(gameBoard);
+    changeFirstPlayer = false;
   }
 
   function writePlayerMoves(player, square) {
