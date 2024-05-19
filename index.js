@@ -36,7 +36,7 @@ const winningCombination = {
     [1, 1],
     [2, 2],
   ],
-  7: [
+  8: [
     [2, 0],
     [1, 1],
     [0, 2],
@@ -63,8 +63,15 @@ function initGame() {
         gameBoard[row][column] = "O";
       }
       let isWin = checkWin(players[player]);
+      let isTie = checkTie();
 
-      if (isWin) {
+      if (isWin || isTie) {
+        if (isWin) {
+          console.log(player, isWin);
+        } else if (isTie) {
+          console.log("It's a tie");
+        }
+
         clearGame();
       }
 
@@ -125,6 +132,15 @@ function initGame() {
     return false;
   }
 
+  function checkTie() {
+    gameBoard.forEach((row) => {
+      row.forEach((column) => {
+        if (column === "") return false;
+      });
+    });
+    return true;
+  }
+
   function setBoard() {
     gameBoard = [
       ["", "", ""],
@@ -149,12 +165,6 @@ function initGame() {
 }
 
 const game = initGame();
-
-// game.putMarks(1, game.choiceSquare(1, 1));
-// game.putMarks(2, game.choiceSquare(1, 2));
-// game.putMarks(1, game.choiceSquare(2, 1));
-// game.putMarks(2, game.choiceSquare(1, 3));
-// game.putMarks(1, game.choiceSquare(2, 2));
 
 function renderDomBoard(gameBoard) {
   gameBoard.forEach((row, rowIndex) => {
